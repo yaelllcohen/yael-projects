@@ -60,7 +60,7 @@ def handle_client(connect, addr):
             print(f"[{addr}] {message}")
             send_to_client("message received",connect)
 
-    connect.close(); #סוגר את החיבור, את הסוקט
+    connect.close() #סוגר את החיבור, את הסוקט
 
 " הפונקציה נועדה לטפל בחיבורים חדשים ולחק אותם לאן שהם צריכים להגיע"
 def start():
