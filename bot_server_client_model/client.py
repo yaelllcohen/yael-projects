@@ -1,4 +1,5 @@
 import socket
+import threading
 
 HEADER = 64 #גודל ההודעה עד 64 ביטים
 PORT = 5050
@@ -29,16 +30,30 @@ def send(msg):
     client.send(send_length)
     client.send(message)
 
-    message_length_that_came_from_server = client.recv(HEADER).decode(FORMAT)
-    if  message_length_that_came_from_server:  # האם ההודעה חוקית
-        message_length_that_came_from_server = int( message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
-        message_that_came_from_server = client.recv( message_length_that_came_from_server).decode(FORMAT)  # ההודעה עצמה בביטים
-        print(f"[SERVER REPLAY] {message_that_came_from_server}")
 
-send("hello")
-send("date")
-send("hour")
-send("thanks")
-send("joke")
 
-send(DISCONNECT_MESSAGE)
+def listen_to_server():
+    while True:
+        try:
+            message_length_that_came_from_server = client.recv(HEADER).decode(FORMAT)
+            if message_length_that_came_from_server:  # האם ההודעה חוקית
+                message_length_that_came_from_server = int(message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
+                message_that_came_from_server = client.recv(message_length_that_came_from_server).decode(FORMAT)  # ההודעה עצמה בביטים
+                print(f" [BOT] {message_that_came_from_server}")
+        except:
+            print("[ERROR] couldn't get the message from the server")
+            break
+
+def start():
+    threading.Thread(target=listen_to_server).start()
+
+    while True:
+        message = input()
+        if message == DISCONNECT_MESSAGE:
+            send(DISCONNECT_MESSAGE)
+            break
+        else:
+            send(message)
+
+if __name__ == "__main__":
+    start()

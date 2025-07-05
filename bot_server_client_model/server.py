@@ -75,7 +75,7 @@ def handle_client(connect, addr):
             print(f"[{addr}] {message}")
             get_response_from_db(message,connect)
 
-    connect.close(); #סוגר את החיבור, את הסוקט
+    connect.close() #סוגר את החיבור, את הסוקט
 
 " הפונקציה נועדה לטפל בחיבורים חדשים ולחק אותם לאן שהם צריכים להגיע"
 def start():
@@ -93,4 +93,7 @@ def start():
         thread.start()
         print(f"[how many threads] {threading.active_count() - 1}")
 
-start()
+if __name__ == "__main__":
+
+
+    start()
