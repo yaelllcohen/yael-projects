@@ -14,6 +14,8 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect(self.ADDR)
 
+        self.username = ""
+
 
     def send(self,msg):
         try:
@@ -40,11 +42,12 @@ class Client:
 
 
 
-    def send_to_server_username(self):
+    def send_to_server_username(self,user):
         try:
-            username = input("Enter your username: ")
-            if username:
-                self.send(username)
+            self.username = user
+            #username = input("Enter your username: ")
+            if self.username:
+                self.send(self.username)
         except:
             print("[ERROR] couldn't send username")
 
@@ -55,7 +58,7 @@ class Client:
                 if message_length_that_came_from_server:  # האם ההודעה חוקית
                     message_length_that_came_from_server = int(message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
                     message_that_came_from_server = self.client.recv(message_length_that_came_from_server).decode(self.FORMAT)  # ההודעה עצמה בביטים
-                    print({message_that_came_from_server})
+                    print(message_that_came_from_server)
             except:
                 print("[ERROR] couldn't get the message from the server")
                 break
