@@ -1,6 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
 from PIL import Image, ImageTk
 from client import Client
 from giu_client import GIUClient

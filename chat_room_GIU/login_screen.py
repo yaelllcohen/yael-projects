@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from client import Client
-from giu_client import GIUClient
 from pick_your_image import PickYourImage
 
 
