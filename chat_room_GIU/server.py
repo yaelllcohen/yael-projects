@@ -2,7 +2,7 @@ import socket
 import threading
 
 class Server:
-    def __init__(self, host=socket.gethostbyname(socket.gethostname()), port=5050):
+    def __init__(self, host= '0.0.0.0', port=5050):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.HEADER = 64 # גודל ההודעה עד 64 ביטים
         self.PORT = port
