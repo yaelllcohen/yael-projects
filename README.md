@@ -6,7 +6,7 @@
 ---
 
 ## 💬 Chat Room GUI  
-(https://github.com/yaelllcohen/yaelllcohen/tree/main/chat_room_GIU)  
+(https://github.com/yaelllcohen/yael-projects/tree/main/chat_room_GIU)  
 שדרוג של מערכת הצ'אט, כולל ממשק גרפי (GUI) –  
 הצ'אט פועל גם בין מחשבים שונים דרך הרשת 👩‍💻🧑‍💻
 
