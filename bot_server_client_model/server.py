@@ -50,8 +50,8 @@ def get_response_from_db(msg,connect):
     padded_send_length = HEADER - len(send_length)
     send_length += b' ' * padded_send_length
     " חייב לשלוח פעמיים כי אחרת השרת לא ידע את גודל ההודעה וזה ייצור קריסה"
-    connect.send(send_length)
-    connect.send(send_bot_msg)
+    connect.sendall(send_length)
+    connect.sendall(send_bot_msg)
 
 
 "הפונקציה נועדה לטפל בחיבור הבודד בין הלקוח לשרת"
