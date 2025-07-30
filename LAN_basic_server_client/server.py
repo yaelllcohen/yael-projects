@@ -36,8 +36,8 @@ def send_to_client(msg, connect) :
     padded_send_length = HEADER - len(send_length)
     send_length += b' ' * padded_send_length
     " חייב לשלוח פעמיים כי אחרת השרת לא ידע את גודל ההודעה וזה ייצור קריסה"
-    connect.send(send_length)
-    connect.send(message)
+    connect.sendall(send_length)
+    connect.sendall(message)
 
 "הפונקציה נועדה לטפל בחיבור הבודד בין הלקוח לשרת"
 def handle_client(connect, addr):

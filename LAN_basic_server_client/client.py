@@ -26,8 +26,8 @@ def send(msg):
     padded_send_length = HEADER - len(send_length)
     send_length += b' ' * padded_send_length
     " חייב לשלוח פעמיים כי אחרת השרת לא ידע את גודל ההודעה וזה ייצור קריסה"
-    client.send(send_length)
-    client.send(message)
+    client.sendall(send_length)
+    client.sendall(message)
 
     message_length_that_came_from_server = client.recv(HEADER).decode(FORMAT)
     if  message_length_that_came_from_server:  # האם ההודעה חוקית
