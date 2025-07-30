@@ -66,8 +66,8 @@ class Server:
             padded_send_length = self.HEADER - len(send_length)
             send_length += b' ' * padded_send_length
             " חייב לשלוח פעמיים כי אחרת השרת לא ידע את גודל ההודעה וזה ייצור קריסה"
-            conn.send(send_length)
-            conn.send(message)
+            conn.sendall(send_length)
+            conn.sendall(message)
         except:
             print(f"[ERROR] Failed to send message to a client")
             if conn in self.connections:  # כשהלקוח התנתק מהרשימה של החיבורים הפעילים
