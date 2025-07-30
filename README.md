@@ -52,4 +52,16 @@
 
 ---
 
+## 🖥️ Remote Control over LAN  
+(https://github.com/yaelllcohen/yael-projects/tree/main/remote_control_computer)  
+מערכת שליטה מרחוק בין מחשבים באותה רשת –  
+- `victim.py`: הלקוח שמחכה לפקודות  
+- `attack.py`: התוקף ששולח פקודות ומקבל תגובות  
+- `save_commands.db`: מסד נתונים ששומר את הפקודות והתשובות  
+- `view_data.py`: מציג את המידע השמור מהמסד  
+
+💡 הפרויקט מדגים תקשורת מבוססת סוקטים, הרצת פקודות מערכת מרחוק, וכתיבה למסד נתונים SQLite.
+
+
+---
 
