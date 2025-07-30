@@ -21,7 +21,7 @@ class AttackServer:
             command = input(">>")
             if command.lower() == self.DISCONNECTED_MESSAGE:
                 break
-            client_socket.send(command.encode(self.FORMAT))
+            client_socket.sendall(command.encode(self.FORMAT))
             print(f"[SENDING] sending command to {addr}")
 
 
