@@ -12,8 +12,15 @@ class DataInDB:
         for column in data:
             print(column)
 
+    def delete_all_data(self):
+        self.CURSOR.execute("DELETE FROM commands")
+        self.CONNECTION.commit()
+        print("[DB] All data deleted.")
+
 
 if __name__ == "__main__":
     viewer = DataInDB()
+    #viewer.delete_all_data()
     viewer.show_data()
+
 
