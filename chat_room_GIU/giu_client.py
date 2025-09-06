@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 
 
 class GIUClient:
-    def __init__(self, client, path):
+    def __init__(self, client, path=None):
 
         self.client = client
 
@@ -86,4 +86,4 @@ class GIUClient:
 
 if __name__ == "__main__":
     client = Client()
-    app = GIUClient(client)
+    # app = GIUClient(client)

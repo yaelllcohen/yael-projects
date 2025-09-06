@@ -1,6 +1,10 @@
 import socket
 import threading
 
+from rsa_keys import RsaKeys
+
+import rsa
+
 class Server:
     def __init__(self, host= '0.0.0.0', port=5050):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,7 +23,12 @@ class Server:
         self.server.bind(self.ADDR)  # הוא מכריז על כתובת, כולמר שקיים כתובת כדי שיגיעו בקשות
         self.connections = []
 
-    def receive_username(self, conn,username):
+        self.keys = RsaKeys()
+        self.keys.generate_keys()  # יוצר ושומר keys/public_key.pem + private_key.pem
+        self.keys.load_keys()
+
+
+    def receive_username_and_message(self, conn, username):
         is_connected = True
         while is_connected:
             """
@@ -32,13 +41,15 @@ class Server:
                 message_length = conn.recv(self.HEADER).decode(self.FORMAT)
                 if message_length:  # האם ההודעה חוקית
                     message_length = int(message_length)  # ממירים לINT את גודל ההודעה כביטים
-                    message = conn.recv(message_length).decode(self.FORMAT)  # ההודעה עצמה בביטים
-                    if message == self.DISCONNECT_MESSAGE:
+                    plain_bytes = conn.recv(message_length)
+                    plain_text = self.keys.decrypt(plain_bytes,self.keys.private_key)
+                    #message = conn.recv(message_length).decode(self.FORMAT)  # ההודעה עצמה בביטים
+                    if plain_text == self.DISCONNECT_MESSAGE:
                         is_connected = False
                         print(f"{username} disconnected")
 
-                    print(f"[{username}] {message}")
-                    final_msg = f"[{username}]  {message}"
+                    print(f"[{username}] {plain_text}")
+                    final_msg = f"[{username}]  {plain_text}"
                     self.broadcast(final_msg, conn)
             except:
                 print(f"[ERROR] the connection with {username} failed")
@@ -91,13 +102,15 @@ class Server:
             username_length = conn.recv(self.HEADER).decode(self.FORMAT)
             if username_length:
                 username_length = int(username_length)
-                username = conn.recv(username_length).decode(self.FORMAT)
-                print(f"[USERNAME RECEIVED] {username} from {addr}")
+                plain_bytes_username = conn.recv(username_length)
+                plain_text_username = self.keys.decrypt(plain_bytes_username, self.keys.private_key)
+
+                print(f"[USERNAME RECEIVED] {plain_text_username} from {addr}")
             else:
                 username = f"{addr}"  # fallback אם לא התקבל שם
 
             self.connections.append(conn)
-            thread = threading.Thread(target=self.receive_username, args=(conn, username))
+            thread = threading.Thread(target=self.receive_username_and_message, args=(conn, plain_text_username))
             thread.start()
         except:
             print(f"[ERROR] failed to receive username from {addr}")

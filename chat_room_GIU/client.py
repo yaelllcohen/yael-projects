@@ -1,5 +1,7 @@
 import socket
 import threading
+from rsa_keys import RsaKeys
+import rsa
 
 class Client:
     def __init__(self,host = socket.gethostbyname(socket.gethostname()),port = 5050):
@@ -16,12 +18,17 @@ class Client:
 
         self.username = ""
 
+        self.keys = RsaKeys()
+
+        with open("keys/public_key.pem", "rb") as f:
+            self.server_public = rsa.PublicKey.load_pkcs1(f.read())
 
     def send(self,msg):
         try:
-            message = msg.encode(self.FORMAT)
-            message_length = len(message)
-            "ממיר את ההודעה ממחרוזת לביטים"
+            cipher_text = self.keys.encrypt(msg, self.server_public)
+            #message = msg.encode(self.FORMAT)
+            message_length = len(cipher_text)
+            "ממיר את גודל ההודעה ממחרוזת לביטים"
             send_length = str(message_length).encode(self.FORMAT)
             """
             ההודעה ששולחים צריכה להיות בגודל HEADER ואם היא לא נצטרך להוסיף
@@ -35,7 +42,7 @@ class Client:
             send_length += b' ' * padded_send_length
             " חייב לשלוח פעמיים כי אחרת השרת לא ידע את גודל ההודעה וזה ייצור קריסה"
             self.client.sendall(send_length)
-            self.client.sendall(message)
+            self.client.sendall(cipher_text)
 
         except:
             print("[ERROR] couldn't send the message")
