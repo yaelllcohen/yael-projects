@@ -62,7 +62,10 @@
 
 💡 הפרויקט מדגים תקשורת מבוססת סוקטים, הרצת פקודות מערכת מרחוק, וכתיבה למסד נתונים SQLite.
 
-📁 File Server (שרת קבצים)
+
+##📁 File Server (שרת קבצים)
+---
+
 
 (https://github.com/yaelllcohen/yael-projects/tree/main/file_server_project)
 שרת קבצים שיצרתי
