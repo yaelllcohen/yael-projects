@@ -87,13 +87,16 @@ class FirstScreenAfterLogin():
             return
         os.startfile(file_path)  # פותח לפי תוכנה ברירת מחדל
 
-
-    def open_admin_screen(self):
+    def connect_to_db(self):
         conn = sqlite3.connect("users.db")
         cursor = conn.cursor()
         cursor.execute("SELECT IsAdmin FROM users WHERE username = ?", (self.username,))
         result = cursor.fetchone()
+        return result
 
+    def open_admin_screen(self):
+
+        result = self.connect_to_db()
         if not result:
             messagebox.showinfo("dont exist", f"username {self.username} is not exist")
 

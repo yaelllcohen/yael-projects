@@ -32,9 +32,9 @@ class Login():
         self.label_pass.config(anchor ="center", justify ="center", bg ="pink")
         self.label_pass.grid(row = 3, column = 1, pady = 5, sticky ="ew")
 
-        self.password = ttk.Entry(self.root)
+        self.password = ttk.Entry(self.root,show="*")
         self.password.grid(row = 4, column= 1, padx=5, pady=5, sticky= "nsew")
-        self.password.bind("<Return>", self.change_to_main)
+        self.password.bind("<Return>", self.if_pass_true_change_to_main)
 
 
         self.button_frame = tk.Frame(self.root, bg="pink")
@@ -43,7 +43,7 @@ class Login():
         self.register_button = ttk.Button(self.button_frame, text="register", command=self.change_to_register)
         self.register_button.grid(row=6, column=1, pady=3, padx=10)
 
-        self.login_button = ttk.Button(self.button_frame, text="login", command=self.change_to_main)
+        self.login_button = ttk.Button(self.button_frame, text="login", command=self.if_pass_true_change_to_main)
         self.login_button.grid(row=6, column=2, pady=3, padx=10)
 
         # Label להודעות
@@ -54,14 +54,17 @@ class Login():
 
         self.root.mainloop()
 
-
-    def change_to_main(self,event=None):
-        #מתחברת בו לתוך הDB
+    def connect_to_the_db(self):
+        # מתחברת בו לתוך הDB
         conn = sqlite3.connect('users.db')
         cursor = conn.cursor()
         sql = 'select * from users'
         cursor.execute(sql)
         results = cursor.fetchall()
+        return results
+
+    def if_pass_true_change_to_main(self,event=None):
+        results = self.connect_to_the_db()
         isFound = False
         username = self.username.get()
         for result in results:

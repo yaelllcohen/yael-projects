@@ -32,7 +32,7 @@ class CreateFile():
 
 
     def save_file(self):
-        save_folder = r'C:\Users\USER\PycharmProjects\Git_Projects\flie_server_final_project\files_created'
+        save_folder = r'C:\Users\USER\PycharmProjects\Git_Projects\file_server_project\files_created'
         if not os.path.exists(save_folder):
             os.makedirs(save_folder)
         folder_username = os.path.join(save_folder,f"{self.username}")

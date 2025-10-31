@@ -1,4 +1,5 @@
 import tkinter as tk
+from operator import truediv
 from tkinter import ttk, messagebox
 import hashlib
 import sqlite3
@@ -31,7 +32,7 @@ class Register():
         self.label_pass.config(anchor ="center", justify ="center", bg ="pink")
         self.label_pass.grid(row = 3, column = 1, pady = 5, sticky ="ew")
 
-        self.password = ttk.Entry(self.root)
+        self.password = ttk.Entry(self.root,show="*")
         self.password.grid(row = 4, column= 1, padx=5, pady=5, sticky= "nsew")
         self.password.bind("<Return>", self.change_to_login_screen)
 
@@ -51,57 +52,77 @@ class Register():
 
         self.root.mainloop()
 
+    def check_if_user_and_pass_ok(self):
+        username = self.username.get()
+
+        if not username:
+            self.show_message("enter username", "orange")
+            return None
+
+        if not self.if_username_uniqe():
+            self.show_message("Username already exist", "red")
+            return None
+
+        password = self.password.get()
+
+        if len(password) < 8:
+            self.show_message("the password length should be at least 8", "orange")
+            return None
+
+        if not password:
+            self.show_message("enter password", "orange")
+            return None
+
+        return username, password
+
+    def connect_to_db(self):
+        # יוצרים או נפתחים למסד נתונים חדש בשם users.db
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+               CREATE TABLE IF NOT EXISTS users (
+                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                   username TEXT UNIQUE NOT NULL,
+                   password TEXT NOT NULL,
+                   IsAdmin BOOL DEFAULT FALSE
+               )
+           """)
+        conn.commit()
+        return conn
+
+
+    def create_user(self, username, hash_pass):
+
+        conn = self.connect_to_db()
+        cursor = conn.cursor()
+
+        sql = "INSERT INTO users (username, password) VALUES (?, ?)"
+
+        values = username, hash_pass
+
+        cursor.execute(sql, values)
+        self.show_message("register!", "green")
+        conn.commit()
+        conn.close()
 
     def add_to_db_user_and_pass(self):
         try:
-            username = self.username.get()
 
-            if not username:
-                self.show_message("enter username", "orange")
+            pair = self.check_if_user_and_pass_ok()
+            if not pair:
                 return False
 
-            if not self.if_username_uniqe():
-                self.show_message("Username already exist", "red")
-                return False
-
-            password = self.password.get()
-
-            if len(password) < 8:
-                self.show_message("the password length should be at least 8", "orange")
-                return False
-
-            if not password:
-                self.show_message("enter password", "orange")
-                return False
-
+            username, password = pair
 
             hash_pass = hashlib.sha1(password.encode()).hexdigest()
-            # יוצרים או נפתחים למסד נתונים חדש בשם users.db
-            conn = sqlite3.connect("users.db")
+            self.create_user(username, hash_pass)
+            return True
 
-            # מצביע לעבודה מול המסד
-            cursor = conn.cursor()
-
-            cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                IsAdmin BOOL DEFAULT FALSE
-            )
-            """)
-
-            sql = "INSERT INTO users (username, password) VALUES (?, ?)"
-
-            values = username, hash_pass
-
-            cursor.execute(sql, values)
-            self.show_message("register!", "green")
         except Exception as e:
             print(e)
-        conn.commit()
-        conn.clofse()
-        return True
+            return False
+
+
 
     def change_to_login_screen(self, event=None):
         if self.add_to_db_user_and_pass():
@@ -114,7 +135,8 @@ class Register():
 
 
     def if_username_uniqe(self):
-        conn = sqlite3.connect('users.db')
+        username = self.username.get()
+        conn = self.connect_to_db()
         cursor = conn.cursor()
         sql = 'select * from users'
         cursor.execute(sql)
