@@ -20,9 +20,6 @@ class GIUClient:
         self.avatar_img = ImageTk.PhotoImage(Image.open(path).resize((30,30)))#מיני אווטאר
 
 
-        #self.style = ttk.Style()
-       # self.style.configure("Send.TButton", background = 'lightblue', foreground = 'green')
-
         self.frame = ttk.Frame(self.root)
         self.frame.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
         self.frame.columnconfigure(0, weight=1)
@@ -34,8 +31,8 @@ class GIUClient:
         self.chat_length.config(state=DISABLED)
         self.chat_length.grid(row=0, column=0, columnspan=2, sticky="nsew", padx=6, pady=6)
         #כפתור שליחת ההודעות
-        self.send_buttom = tk.Button(self.frame, text="SEND", bg="orange", fg="white", width=10, command = self.client_message)
-        self.send_buttom.grid(row=1, column=1, sticky="e", padx=6, pady=6)
+        self.send_button = tk.Button(self.frame, text="SEND", bg="orange", fg="white", width=10, command = self.client_message)
+        self.send_button.grid(row=1, column=1, sticky="e", padx=6, pady=6)
 
         #מקום להקלדת הודעות
         self.text_box = tk.Text(self.frame, bg='lightpink', width=20, height=3)
@@ -73,11 +70,11 @@ class GIUClient:
                     if not plain_text:
                         try:
                             plain_text = cipher_bytes.decode(self.client.FORMAT)
-                        except Exception:
+                        except:
                             plain_text = "[ERROR] unreadable/encrypted message"
+                            print(plain_text)
 
                     self.chat_length.config(state= 'normal')
-                    #self.chat_length.image_create(tk.END, image=self.avatar_img)
                     self.chat_length.insert(tk.END, plain_text + '\n')
                     self.chat_length.config(state=DISABLED)
 

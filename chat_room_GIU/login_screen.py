@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from client import Client
 from pick_your_image import PickYourImage
+from tkinter import messagebox
 
 
 
@@ -32,18 +33,22 @@ class LoginScreen:
         self.username = ttk.Entry(self.frame)
         #self.password.config(anchor="center", justify="center")
         self.username.grid(row = 2, column = 1, padx = 5, pady = 5, sticky ="nsew")
-        self.username.bind("<Return>", self.move_to_chat_screen)
+        self.username.bind("<Return>", self.move_to_pick_your_image_screen)
 
-        self.buttom = tk.Button(self.frame, text="login", bg="orange", fg="white", width=8, command = self.move_to_chat_screen)
-        self.buttom.grid(row=2, column=2, sticky="e",padx = 5, pady=5)
+        self.button = tk.Button(self.frame, text="login", bg="orange", fg="white", width=8, command = self.move_to_pick_your_image_screen)
+        self.button.grid(row=2, column=2, sticky="e",padx = 5, pady=5)
 
         self.root.mainloop()
 
 
-    def move_to_chat_screen(self, event = None):
-        self.client.username = self.username.get()  # שמירת שם המשתמש באובייקט client
-        self.root.destroy()
-        PickYourImage(self.client)
+    def move_to_pick_your_image_screen(self, event = None):
+        username = self.username.get()
+        if username:
+            self.client.username =  username # שמירת שם המשתמש באובייקט client
+            self.root.destroy()
+            PickYourImage(self.client)
+        else:
+            messagebox.showinfo("no username", "enter a username to continue")
 
 
 
