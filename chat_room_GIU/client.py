@@ -58,23 +58,38 @@ class Client:
         except:
             print("[ERROR] couldn't send username")
 
+    def send_to_server_public_key(self):
+        try:
+            public_key_pem = self.keys.public_key.save_pkcs1('PEM')
+            public_key_length = str(len(public_key_pem)).encode(self.FORMAT)
+            padded_send_length = self.HEADER - len(public_key_length)
+            public_key_length += b' ' * padded_send_length
+            self.client.sendall(public_key_length)
+            self.client.sendall(public_key_pem)
+        except:
+            print("couldnt send the public key")
+
     def listen_to_server(self):
         while True:
             try:
                 message_length_that_came_from_server = self.client.recv(self.HEADER).decode(self.FORMAT)
                 if message_length_that_came_from_server:  # האם ההודעה חוקית
                     message_length_that_came_from_server = int(message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
-                    message_that_came_from_server = self.client.recv(message_length_that_came_from_server).decode(self.FORMAT)  # ההודעה עצמה בביטים
-                    print(message_that_came_from_server)
+
+                    cipher_bytes = self.client.recv(message_length_that_came_from_server)# ההודעה המוצפנת בביטים
+                    plain_text = self.keys.decrypt(cipher_bytes, self.keys.private_key)
+
+                    print(plain_text)
             except:
-                print("[ERROR] couldn't get the message from the server")
+                print("[ERROR] couldn't get the message from the server or decrpypt server message")
                 break
 
 
 
 
     def start(self):
-        self.send_to_server_username()
+        self.send_to_server_username(self.username)
+        self.send_to_server_public_key()
         threading.Thread(target=self.listen_to_server).start()
 
         while True:

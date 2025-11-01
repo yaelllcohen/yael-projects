@@ -11,8 +11,8 @@ class Server:
         self.HEADER = 64 # גודל ההודעה עד 64 ביטים
         self.PORT = port
         self.SERVER = host
-        self.ADDR = (host, port)  # הכתובת המורכבת מפורט וIP בטאפל
-        self.FORMAT = 'utf-8'  # בהמשך הקוד נראה את זה ממיר לביטים, זאת שיטת קידוד
+        self.ADDR = (host, port)
+        self.FORMAT = 'utf-8'
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
         self.LISTENING_LIMIT = 5
         """
@@ -26,6 +26,8 @@ class Server:
         self.keys = RsaKeys()
         self.keys.generate_keys()  # יוצר ושומר keys/public_key.pem + private_key.pem
         self.keys.load_keys()
+
+        self.client_keys = {}
 
 
     def receive_username_and_message(self, conn, username):
@@ -62,7 +64,10 @@ class Server:
 
     def send_to_client(self, msg, conn):
         try:
-            message = msg.encode(self.FORMAT)
+            if conn in self.client_keys:
+                message = self.keys.encrypt(msg, self.client_keys[conn])
+            else:
+                message = msg.encode(self.FORMAT)#לא מוצפן
             message_length = len(message)
             "ממיר את ההודעה ממחרוזת לביטים"
             send_length = str(message_length).encode(self.FORMAT)
@@ -83,6 +88,8 @@ class Server:
             print(f"[ERROR] Failed to send message to a client")
             if conn in self.connections:  # כשהלקוח התנתק מהרשימה של החיבורים הפעילים
                 self.connections.remove(conn)
+            if conn in self.client_keys:
+                del self.client_keys[conn]
 
 
     #לקבל הודעה מלקוח אחד ולשלוח אותה לכל הלקוחות המחוברים בשרת
@@ -107,7 +114,17 @@ class Server:
 
                 print(f"[USERNAME RECEIVED] {plain_text_username} from {addr}")
             else:
-                username = f"{addr}"  # fallback אם לא התקבל שם
+                plain_text_username = f"{addr}"  # fallback אם לא התקבל שם
+
+            client_public_key_length_string = conn.recv(self.HEADER).decode(self.FORMAT)
+            if not client_public_key_length_string:
+                raise Exception("missing client public key header")
+
+            client_public_key_length = int(client_public_key_length_string)
+            client_public_key = conn.recv(client_public_key_length)
+            client_public_key_pem = rsa.PublicKey.load_pkcs1(client_public_key) #ממיר לאובייקט של PUBLICKEY שהספרייה RSA תדע להשתמש
+            self.client_keys[conn] = client_public_key_pem
+
 
             self.connections.append(conn)
             thread = threading.Thread(target=self.receive_username_and_message, args=(conn, plain_text_username))

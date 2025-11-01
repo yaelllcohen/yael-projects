@@ -65,6 +65,8 @@ class PickYourImage:
         self.selected = path
         print(f"Avatar selected: {path}")
         self.client.send_to_server_username(self.client.username)
+
+        self.client.send_to_server_public_key()
         self.root.destroy()
         GIUClient(self.client,path)
 

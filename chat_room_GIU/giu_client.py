@@ -65,13 +65,20 @@ class GIUClient:
             try:
                 message_length_that_came_from_server = self.client.client.recv(self.client.HEADER).decode(self.client.FORMAT)
                 if message_length_that_came_from_server:  # האם ההודעה חוקית
-                    message_length_that_came_from_server = int(
-                        message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
-                    message_that_came_from_server = self.client.client.recv(message_length_that_came_from_server).decode(
-                        self.client.FORMAT)  # ההודעה עצמה בביטים
+                    message_length_that_came_from_server = int(message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
+
+                    cipher_bytes = self.client.client.recv(message_length_that_came_from_server)
+                    plain_text = self.client.keys.decrypt(cipher_bytes, self.client.keys.private_key)
+
+                    if not plain_text:
+                        try:
+                            plain_text = cipher_bytes.decode(self.client.FORMAT)
+                        except Exception:
+                            plain_text = "[ERROR] unreadable/encrypted message"
+
                     self.chat_length.config(state= 'normal')
                     #self.chat_length.image_create(tk.END, image=self.avatar_img)
-                    self.chat_length.insert(tk.END, message_that_came_from_server + '\n')
+                    self.chat_length.insert(tk.END, plain_text + '\n')
                     self.chat_length.config(state=DISABLED)
 
 
