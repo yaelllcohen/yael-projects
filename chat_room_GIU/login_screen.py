@@ -22,7 +22,7 @@ class LoginScreen:
         self.labal_login.config(anchor="center", justify="center", bg='lightblue')
         self.labal_login.grid(row=0, column=1, pady=20, sticky="nsew")
 
-        self.labal_user = tk.Label(self.root, text ="enter your username")
+        self.labal_user = tk.Label(self.root, text ="enter your username", font=("David", 15, "bold"))
         self.labal_user.config(anchor ="center", justify ="center", bg ="pink")
         self.labal_user.grid(row = 1, column = 1, pady = 5, sticky ="ew")
 
