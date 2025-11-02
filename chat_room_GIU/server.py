@@ -1,3 +1,4 @@
+import os.path
 import socket
 import threading
 
@@ -23,9 +24,15 @@ class Server:
         self.server.bind(self.ADDR)  # הוא מכריז על כתובת, כולמר שקיים כתובת כדי שיגיעו בקשות
         self.connections = []
 
-        self.keys = RsaKeys()
-        self.keys.generate_keys()  # יוצר ושומר keys/public_key.pem + private_key.pem
-        self.keys.load_keys()
+        server_keys_path = os.path.join("keys", "server")
+        self.keys = RsaKeys(base_path=server_keys_path)
+
+        priv_exists = os.path.exists(os.path.join(server_keys_path, "private_key.pem"))
+        pub_exists = os.path.exists(os.path.join(server_keys_path, "public_key.pem"))
+        if not (priv_exists and pub_exists):
+            self.keys.generate_keys()
+        else:
+            self.keys.load_keys()
 
         self.client_keys = {}
 
@@ -60,6 +67,8 @@ class Server:
         conn.close()  # סוגר את החיבור, את הסוקט
         if conn in self.connections:  # כשהלקוח התנתק מהרשימה של החיבורים הפעילים
             self.connections.remove(conn)
+        if conn in self.client_keys:
+            del self.client_keys[conn]
 
 
     def send_to_client(self, msg, conn):

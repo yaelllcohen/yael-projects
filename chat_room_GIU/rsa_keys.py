@@ -3,30 +3,34 @@ import os
 
 
 class RsaKeys:
-    def __init__(self):
-        self.public_key, self.private_key = rsa.newkeys(2048)
+    def __init__(self,bits = 2048, base_path = None):
+        self.public_key, self.private_key = rsa.newkeys(bits)
         self.FORMAT = "utf-8"
+        self.base_path = base_path
+
+
+    def set_base_path(self, base_path):
+        self.base_path = base_path
 
 
 
     def generate_keys(self):
-        os.makedirs("keys", exist_ok=True)  # יוצר את התיקייה אם לא קיימת
+        if not self.base_path:
+            self.base_path = "keys"
+            os.makedirs("keys", exist_ok=True)
 
-
-        with open("keys/public_key.pem", "wb") as f:
+        with open(os.path.join(self.base_path, "public_key.pem"), "wb") as f:
             f.write(self.public_key.save_pkcs1('PEM'))
 
-        with open("keys/private_key.pem", "wb") as f:
+        with open(os.path.join(self.base_path, "private_key.pem"), "wb") as f:
             f.write(self.private_key.save_pkcs1('PEM'))
-
-
 
     def load_keys(self):
 
-        with open("keys/public_key.pem", "rb") as f:
+        with open(os.path.join(self.base_path, "public_key.pem"), "rb") as f:
             self.public_key = rsa.PublicKey.load_pkcs1(f.read())
 
-        with open("keys/private_key.pem", "rb") as f:
+        with open(os.path.join(self.base_path, "private_key.pem"), "rb") as f:
             self.private_key = rsa.PrivateKey.load_pkcs1(f.read())
 
         return self.public_key, self.private_key

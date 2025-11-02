@@ -2,6 +2,7 @@ import socket
 import threading
 from rsa_keys import RsaKeys
 import rsa
+import os
 
 class Client:
     def __init__(self,host = socket.gethostbyname(socket.gethostname()),port = 5050):
@@ -18,10 +19,23 @@ class Client:
 
         self.username = ""
 
-        self.keys = RsaKeys()
+        self.keys = RsaKeys(bits= 2048)
 
-        with open("keys/public_key.pem", "rb") as f:
+        with open(os.path.join("keys", "server", "public_key.pem"), "rb") as f:
             self.server_public = rsa.PublicKey.load_pkcs1(f.read())
+
+
+    def save_keys_with_names(self):
+        base = os.path.join("keys", "client", self.username)
+        os.makedirs(base, exist_ok=True)
+        self.keys.set_base_path(base)
+        public_key_path = os.path.join(base, "public_key.pem")
+        private_key_path = os.path.join(base, "private_key.pem")
+        if os.path.exists(public_key_path) and os.path.exists(private_key_path):
+            self.keys.load_keys()
+        else:
+            self.keys.generate_keys()
+
 
     def send(self,msg):
         try:
@@ -54,6 +68,7 @@ class Client:
             self.username = user
             #username = input("Enter your username: ")
             if self.username:
+                self.save_keys_with_names()
                 self.send(self.username)
         except:
             print("[ERROR] couldn't send username")
