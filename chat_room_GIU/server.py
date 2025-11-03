@@ -147,7 +147,7 @@ class Server:
 
     def start(self):
         print("[STARTING] server is starting......")
-        self.server.listen(self.LISTENING_LIMIT)  # אנחנו מקשיבים כרגע לחיבורים חדשים, מתחילים להאזין
+        self.server.listen(self.LISTENING_LIMIT)
         print(f"[LISTENING] listening on server {self.SERVER}")
         while True:
             conn, addr = self.server.accept()  # מחכה לחיבור מהלקוח
