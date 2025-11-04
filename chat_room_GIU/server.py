@@ -1,6 +1,7 @@
 import os.path
 import socket
 import threading
+import hashlib
 
 from rsa_keys import RsaKeys
 
@@ -23,6 +24,8 @@ class Server:
         """
         self.server.bind(self.ADDR)  # הוא מכריז על כתובת, כולמר שקיים כתובת כדי שיגיעו בקשות
         self.connections = []
+
+        self.conn_to_username = {}  #  חיבור -> שם משתמש
 
         server_keys_path = os.path.join("keys", "server")
         self.keys = RsaKeys(base_path=server_keys_path)
@@ -47,19 +50,44 @@ class Server:
             כלומר סהכ אנחנו רוצים את גודל ההודעה
             """
             try:
-                message_length = conn.recv(self.HEADER).decode(self.FORMAT)
+                message_length = self.recv_all(conn, self.HEADER)
                 if message_length:  # האם ההודעה חוקית
-                    message_length = int(message_length)  # ממירים לINT את גודל ההודעה כביטים
-                    plain_bytes = conn.recv(message_length)
-                    plain_text = self.keys.decrypt(plain_bytes,self.keys.private_key)
-                    #message = conn.recv(message_length).decode(self.FORMAT)  # ההודעה עצמה בביטים
-                    if plain_text == self.DISCONNECT_MESSAGE:
-                        is_connected = False
-                        print(f"{username} disconnected")
+                    message_length = int(message_length.decode(self.FORMAT))  # ממירים לINT את גודל ההודעה כביטים
+                    plain_bytes = self.recv_all(conn, message_length)
 
-                    print(f"[{username}] {plain_text}")
-                    final_msg = f"[{username}]  {plain_text}"
-                    self.broadcast(final_msg, conn)
+                    #קודם מנסים לקרוא כטקסט רגיל
+                    text_try = None
+                    try:
+                        text_try = plain_bytes.decode(self.FORMAT)
+                    except Exception:
+                        pass
+
+                    if text_try is not None and text_try.startswith("[IMAGE]|"):
+                        # מלקוח לשרת: [IMAGE]|<base64>
+                        encoded = text_try[len("[IMAGE]|"):]
+                        # מהשרת לכל הלקוחות: [IMAGE]|username|<base64>
+                        final_msg = f"[IMAGE]|{username}|{encoded}"
+                        self.broadcast(final_msg, conn)
+                        continue
+                    else:
+
+                        try:
+                            plain_text = self.keys.decrypt(plain_bytes, self.keys.private_key)
+                        except Exception:
+                            if  text_try is not None:
+                                plain_text = text_try
+                            else:
+                                print("[ERROR] unreadable message from client")
+                                continue  # עוברים להודעה הבאה
+
+
+                        if plain_text == self.DISCONNECT_MESSAGE:
+                            is_connected = False
+                            print(f"{username} disconnected")
+
+                        print(f"[{username}] {plain_text}")
+                        final_msg = f"[{username}]  {plain_text}"
+                        self.broadcast(final_msg, conn)
             except:
                 print(f"[ERROR] the connection with {username} failed")
                 is_connected = False
@@ -70,10 +98,18 @@ class Server:
         if conn in self.client_keys:
             del self.client_keys[conn]
 
+        self.broadcast_users_list()  # שולח רשימה מעודכנת אחרי ניתוק
+
+        if conn in self.client_keys:
+            del self.client_keys[conn]
+
 
     def send_to_client(self, msg, conn):
         try:
-            if conn in self.client_keys:
+            if msg.startswith("[IMAGE]|"):
+                # לא מצפינים תמונות
+                message = msg.encode(self.FORMAT)
+            elif conn in self.client_keys:
                 message = self.keys.encrypt(msg, self.client_keys[conn])
             else:
                 message = msg.encode(self.FORMAT)#לא מוצפן
@@ -136,11 +172,39 @@ class Server:
 
 
             self.connections.append(conn)
+            self.conn_to_username[conn] = plain_text_username
+
+            # מיד אחרי שהתחבר – נעדכן את כל הלקוחות ברשימת המשתמשים
+            self.broadcast_users_list()
+
             thread = threading.Thread(target=self.receive_message, args=(conn, plain_text_username))
             thread.start()
         except:
             print(f"[ERROR] failed to receive username from {addr}")
             conn.close()
+
+    def broadcast_users_list(self):
+        users = []
+        for conn in self.connections:
+            username = self.conn_to_username.get(conn)
+            if username:
+                users.append(username)
+
+        msg = "USERS_LIST|" + "|".join(users)
+        print(f"[USERS LIST] {users}")
+
+        for conn in self.connections:
+            self.send_to_client(msg, conn)
+
+
+    def recv_all(self, conn, n):
+        data = b""
+        while len(data) < n:
+            packet = conn.recv(n - len(data))
+            if not packet:  # הלקוח התנתק באמצע
+                return None
+            data += packet
+        return data
 
 
     " הפונקציה נועדה לטפל בחיבורים חדשים ולחלק אותם לאן שהם צריכים להגיע"

@@ -39,7 +39,12 @@ class Client:
 
     def send(self,msg):
         try:
-            cipher_text = self.keys.encrypt(msg, self.server_public)
+            if msg.startswith("[IMAGE]|"):
+                cipher_text = msg.encode(self.FORMAT)
+            else:
+                # טקסט רגיל – מוצפן כמו קודם
+                cipher_text = self.keys.encrypt(msg, self.server_public)
+
             #message = msg.encode(self.FORMAT)
             message_length = len(cipher_text)
             "ממיר את גודל ההודעה ממחרוזת לביטים"
@@ -84,14 +89,23 @@ class Client:
         except:
             print("couldnt send the public key")
 
+    def recv_all(self, n):
+        data = b""
+        while len(data) < n:
+            packet = self.client.recv(n - len(data))
+            if not packet:
+                return None
+            data += packet
+        return data
+
     def listen_to_server(self):
         while True:
             try:
-                message_length_that_came_from_server = self.client.recv(self.HEADER).decode(self.FORMAT)
+                message_length_that_came_from_server =self.recv_all(self.HEADER).decode(self.FORMAT)
                 if message_length_that_came_from_server:  # האם ההודעה חוקית
                     message_length_that_came_from_server = int(message_length_that_came_from_server)  # ממירים לINT את גודל ההודעה כביטים
 
-                    cipher_bytes = self.client.recv(message_length_that_came_from_server)# ההודעה המוצפנת בביטים
+                    cipher_bytes = self.recv_all(message_length_that_came_from_server)# ההודעה המוצפנת בביטים
                     plain_text = self.keys.decrypt(cipher_bytes, self.keys.private_key)
 
                     print(plain_text)
