@@ -112,7 +112,7 @@ class AdminScreen():
             username = self.users_table_treeview.set(id, "username")
             is_admin_text = self.users_table_treeview.set(id, "IsAdmin")  # "Yes"/"No"
 
-            # בונה תפריט דינמי
+            # בונה תפריט דינמי כאילו לא לכולם אותו דבר
             self.menu.delete(0, "end")
             if is_admin_text == "Yes":
                 self.menu.add_command(label="Remove admin", command= self.remove_admin)
@@ -126,7 +126,7 @@ class AdminScreen():
             # מציג את התפריט באותו המקום
             self.menu.tk_popup(event.x_root, event.y_root)
         finally:
-            self.menu.grab_release()
+            self.menu.grab_release() #משחרר את הפוקוס
 
 
 

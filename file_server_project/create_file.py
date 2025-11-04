@@ -39,7 +39,6 @@ class CreateFile():
         if not os.path.exists(folder_username):
             os.makedirs(folder_username)
         file_path = os.path.join(folder_username, f"{self.name}.txt")
-        #קורא מהשורה הראשונה עד הסוף
         file_text = str(self.text.get(1.0,tk.END))
         with open(file_path, 'w') as file:
             file.write(file_text)

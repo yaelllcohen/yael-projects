@@ -37,7 +37,7 @@ class Server:
         self.client_keys = {}
 
 
-    def receive_username_and_message(self, conn, username):
+    def receive_message(self, conn, username):
         is_connected = True
         while is_connected:
             """
@@ -136,7 +136,7 @@ class Server:
 
 
             self.connections.append(conn)
-            thread = threading.Thread(target=self.receive_username_and_message, args=(conn, plain_text_username))
+            thread = threading.Thread(target=self.receive_message, args=(conn, plain_text_username))
             thread.start()
         except:
             print(f"[ERROR] failed to receive username from {addr}")

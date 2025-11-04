@@ -92,7 +92,7 @@ class Victim:
 
     def keeping_in_DB(self, output, command):
 
-        connection = sqlite3.connect("save_commands.db")  # קובץ באותה תיקייה של הקוד
+        connection = sqlite3.connect("save_commands.db")
         cursor = connection.cursor()
 
         cursor.execute("""
