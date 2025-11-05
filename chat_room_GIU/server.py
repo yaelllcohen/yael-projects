@@ -63,9 +63,7 @@ class Server:
                         pass
 
                     if text_try is not None and text_try.startswith("[IMAGE]|"):
-                        # מלקוח לשרת: [IMAGE]|<base64>
                         encoded = text_try[len("[IMAGE]|"):]
-                        # מהשרת לכל הלקוחות: [IMAGE]|username|<base64>
                         final_msg = f"[IMAGE]|{username}|{encoded}"
                         self.broadcast(final_msg, conn)
                         continue

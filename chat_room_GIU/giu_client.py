@@ -60,6 +60,7 @@ class GIUClient:
 
         self.image_refs = []
 
+        #דמון אומר שאם כל שאר התהליכונים נסגרים אז הוא ייסגר גם אוטומטית
         threading.Thread(target=self.listen_to_server, daemon=True).start()
 
 
@@ -79,8 +80,7 @@ class GIUClient:
             self.chat_length.config(state=DISABLED)
 
 
-        else:
-            self.client.disconnect()
+
 
     def listen_to_server(self):
         while True:
@@ -94,9 +94,9 @@ class GIUClient:
                     plain_text = None
 
                     try:
-                        tmp = self.client.keys.decrypt(cipher_bytes, self.client.keys.private_key)
-                        if isinstance(tmp, str):  # <-- החלק החשוב
-                            plain_text = tmp
+                        temp = self.client.keys.decrypt(cipher_bytes, self.client.keys.private_key)#אם זה טקסט זה אמור להחזיר מחרוזת אחרת BOOL
+                        if isinstance(temp, str):  # האם זה מחרוזת
+                            plain_text = temp
                     except Exception:
                         pass
 
@@ -109,7 +109,7 @@ class GIUClient:
 
 
                     if plain_text.startswith("USERS_LIST|"):
-                        users_str = plain_text[len("USERS_LIST|"):]
+                        users_str = plain_text[len("USERS_LIST|"):] #החלק בלי הUSERS_LIST
                         users = [u for u in users_str.split("|") if u]  # מפצל לשמות
                         self.update_users_list(users)
 
@@ -121,9 +121,9 @@ class GIUClient:
                                 print("[ERROR] bad IMAGE message format:", plain_text)
                                 continue
 
-                            _, username, encoded = parts  # encoded זה רק ה-base64
+                            _, username, encoded = parts
                             image_data = base64.b64decode(encoded)
-                            image = Image.open(BytesIO(image_data)).resize((100, 100))
+                            image = Image.open(BytesIO(image_data)).resize((100, 100)) #פותח את התמונה מתוך הבייטים שבזיכרון
                             img_tk = ImageTk.PhotoImage(image)
 
                             self.chat_length.config(state='normal')
@@ -179,14 +179,12 @@ class GIUClient:
             with open(file_path, "rb") as f:
                 image_data = f.read()
 
-            # מצפינים את הבייטים לבייס64 כדי שיהיה אפשר לשלוח כטקסט
             encoded = base64.b64encode(image_data).decode("utf-8")
 
-            # מוסיפים תג מיוחד כדי לדעת בצד השני שזו תמונה
             message = f"[IMAGE]|{encoded}"
             self.client.send(message)
 
-            # מוסיפים לעצמנו בצ'אט תצוגה מקדימה
+
             img = Image.open(file_path).resize((100, 100))
             img_tk = ImageTk.PhotoImage(img)
             self.chat_length.config(state='normal')
