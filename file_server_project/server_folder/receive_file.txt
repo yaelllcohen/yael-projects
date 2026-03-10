@@ -1,0 +1,11 @@
+How to send file using code:
+
+Client:
+1. read bytes from file
+2. divide file to chunks
+3. send bytes from client to server
+
+Server:
+1. receive bytes from socket
+2. join all chunks
+3. write all bytes to file

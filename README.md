@@ -1,0 +1,79 @@
+# 🎯 Yael Projects
+
+היי לכולם! 👋  
+ברוכים הבאים לריכוז הפרויקטים שלי. כאן תוכלו למצוא מגוון פרויקטים שכתבתי בתחומים שונים – ממשחקים ועד לתקשורת בין לקוח לשרת.
+
+---
+
+## 💬 Chat Room GUI  
+(https://github.com/yaelllcohen/yael-projects/tree/main/chat_room_GIU)  
+שדרוג של מערכת הצ'אט, כולל ממשק גרפי (GUI) –  
+הצ'אט פועל גם בין מחשבים שונים דרך הרשת 👩‍💻🧑‍💻
+הצאט מוצפן משני הכיוונים גם מהלקוח וגם מהשרת בהצפנת RSA ותומך בריבוי משתמשים
+
+---
+
+## 🤖 Chat Bot Server-Client  
+(https://github.com/yaelllcohen/yael-projects/tree/main/bot_server_client_model)  
+צ'אט בין לקוח לשרת, בו השרת הוא בוט שמבוסס על מסד נתונים SQLite.  
+אני שולחת לבוט פקודות כמו "מה השעה" והוא משיב בתשובה מתאימה לפי הנתונים שבמסד.
+
+---
+
+## 🌐 LAN Basic Server-Client  
+(https://github.com/yaelllcohen/yael-projects/tree/main/LAN_basic_server_client)  
+מודל תקשורת בסיסי בין שרת ללקוח דרך רשת מקומית (LAN).  
+הפרויקט מדגים העברת הודעות בין מחשבים באותה רשת באמצעות סוקטים.
+
+---
+
+## 🎮 Hangman Game  
+(https://github.com/yaelllcohen/yael-projects/tree/main/I_created_hangman_game)  
+משחק "האיש תלוי" שכתבתי בעצמי.  
+המטרה היא לגלות את המילה לפני ש"האיש" נתלה. כולל בדיקת תווים, נסיונות מוגבלים וחוויית משחק בסיסית.
+
+---
+
+## 🕹️ Enemies vs One Player  
+(https://github.com/yaelllcohen/yael-projects/tree/main/enemies_vs_one_player)  
+משחק שבו שחקן אחד צריך להתחמק ממספר אויבים.  
+האויבים נעים על המסך, והשחקן צריך לשרוד כמה שיותר זמן בלי להיתפס.
+
+---
+
+## 🍽️ Restaurant Access Project  
+(https://github.com/yaelllcohen/yael-projects/blob/main/resturantACCESS.accdb)  
+פרויקט שעשיתי בכיתה י׳ על מסעדה – כולל:  
+- טפסים  
+- שאילתות  
+- טבלאות  
+- מאקרו  
+
+הכול נבנה בעזרת Microsoft Access, במבנה של מערכת ניהול מסעדה.
+
+---
+
+## 🖥️ Remote Control over LAN  
+(https://github.com/yaelllcohen/yael-projects/tree/main/remote_control_computer)  
+מערכת שליטה מרחוק בין מחשבים באותה רשת –  
+- `victim.py`: הלקוח שמחכה לפקודות  
+- `attack.py`: התוקף ששולח פקודות ומקבל תגובות  
+- `save_commands.db`: מסד נתונים ששומר את הפקודות והתשובות  
+- `view_data.py`: מציג את המידע השמור מהמסד  
+
+💡 הפרויקט מדגים תקשורת מבוססת סוקטים, הרצת פקודות מערכת מרחוק, וכתיבה למסד נתונים SQLite.
+
+---
+
+## 🤖 📁 File Server (שרת קבצים)
+(https://github.com/yaelllcohen/yael-projects/tree/main/file_server_project)
+
+בניית מערכת ניהול קבצים עם ממשק גרפי (GUI) המאפשרת למשתמשים להירשם, להתחבר, ליצור ולשמור קבצים אישיים, כאשר כל הנתונים נשמרים במסד נתונים (SQLite).
+
+בנוסף, למערכת יש משתמש מנהל (Admin) שיכול לצפות בכל המשתמשים, לשנות הרשאות (להפוך משתמשים לאדמין או להסיר אותם), ולנהל את המערכת כולה.
+
+לאחר יצירת הסיסמה השתמשתי בHASH כדי שאוכל לשמור את הסיסמה במסד נתונים בצורה הבטוחה ביותר.
+
+
+---
+
