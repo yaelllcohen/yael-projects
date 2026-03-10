@@ -1,6 +1,47 @@
+# Virtual environment
 .venv/
+venv/
+env/
+ENV/
+
+# Python cache / compiled files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*$py.class
+
+# IDE
 .idea/
+.vscode/
+
+# Local databases and generated files
 data/database.db
+db.sqlite3
+db.sqlite3-journal
 server_files/
+
+# Environment files
+.env
+.envrc
+
+# Test / coverage / tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.cache/
+
+# Build / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+
+# Jupyter
+.ipynb_checkpoints
